@@ -1,5 +1,7 @@
 const express = require('express')
 const dotenv = require('dotenv')
+// const logger = require('./middleware/logger')
+const morgan = require('morgan')
 
 // Route
 const order = require('./routes/order.route')
@@ -8,6 +10,11 @@ const order = require('./routes/order.route')
 dotenv.config({path: './config/config.env'})
 
 const app = express()
+
+// app.use(logger)
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'))
+}
 
 // Mount router
 app.use('/api/v1/orders', order)
