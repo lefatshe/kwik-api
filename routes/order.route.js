@@ -1,5 +1,5 @@
 const express = require('express')
-const router = express.Router()
+
 const {
     getOrders,
     getByIdOrder,
@@ -8,11 +8,15 @@ const {
     deleteOrder
 } = require('../controllers/orders/orders.controllers')
 
-router.route('/')
+const router = express.Router()
+
+router
+    .route('/')
     .get(getOrders)
     .post(createOrder)
 
-router.route('/:id')
+router
+    .route('/:id')
     .get(getByIdOrder)
     .put(updateOrder)
     .delete(deleteOrder)

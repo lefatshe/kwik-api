@@ -7,7 +7,7 @@ exports.getOrders = (req, res, next) => {
         .json({success: true, msg: 'Show all orders'})
 }
 
-// @desc:   getOrder
+// @desc:   getOrder ID
 // @route:   GET /api/v1/orders/:id
 // @access:   Public
 exports.getByIdOrder = (req, res, next) => {
@@ -17,9 +17,12 @@ exports.getByIdOrder = (req, res, next) => {
 }
 
 // @desc:   Create new order
-// @route:   PO ST /api/v1/order/:id
+// @route:   POST /api/v1/order
 // @access:   Private
 exports.createOrder = (req, res, next) => {
+    res
+        .status(200)
+        .json({success: true, msg: 'Create new order'})
 }
 
 // @desc:   Update order
