@@ -1,4 +1,6 @@
 const mongoose = require('mongoose')
+const slug = require('slugify')
+const geocoder = require('../utils/geocoder')
 
 const OrderSchema = new mongoose.Schema({
     name: {
@@ -88,4 +90,30 @@ const OrderSchema = new mongoose.Schema({
     }
 })
 
+// Create slug from name
+OrderSchema.pre('save', function (next) {
+    this.slug = slug(this.name, {lower: true})
+    next()
+})
+
+// Create geoCoder
+OrderSchema.pre('save', async function (next) {
+    const loc = await geocoder.geocode(this.address);
+    this.location = {
+        type: 'Points',
+        coordinates: [loc[0].longitude, loc[0].latitude],
+        formattedAddress: loc[0].formattedAddress,
+        street: loc[0].streetName,
+        city: loc[0].city,
+        state: loc[0].stateCode,
+        zipCode: loc[0].zipCode,
+        country: loc[0].countryCode
+    }
+    // Do not add
+    this.address = undefined
+    next()
+})
+
+
+// Create slug from name
 module.exports = mongoose.model('Order', OrderSchema)
