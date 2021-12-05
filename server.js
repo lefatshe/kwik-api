@@ -3,6 +3,7 @@ const express = require('express')
 const dotenv = require('dotenv')
 // const logger = require('./middleware/logger')
 const morgan = require('morgan')
+const errorHandler = require('./middleware/error');
 
 // load environment variables
 dotenv.config({path: './config/config.env'})
@@ -27,7 +28,7 @@ app.use(express.json())
 
 // Mount router
 app.use('/api/v1/orders', order)
-
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 5000
 
