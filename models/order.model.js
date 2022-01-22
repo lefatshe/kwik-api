@@ -25,15 +25,39 @@ const OrderSchema = new mongoose.Schema({
             'Please use valid phone number'
         ]
     },
-    address: {
+    dropOffAddress: {
         type: String,
         required: [
             true,
             'Please provide address'
         ]
     },
-    location: {
-        // Geo Json
+    pickUpAddress: {
+        type: String,
+        required: [
+            true,
+            'Please provide address'
+        ]
+    },
+    pickLocation: {
+        // Geo Json default fields
+        type: {
+            type: String,
+            enum: ['Point']
+        },
+        coordinates: {
+            type: [Number],
+            index: '2dsphere'
+        },
+        formattedAddress: String,
+        street: String,
+        city: String,
+        states: String,
+        zipcode: String,
+        country: String
+    },
+    dropLocation: {
+        // Geo Json default fields
         type: {
             type: String,
             enum: ['Point']
@@ -96,21 +120,37 @@ OrderSchema.pre('save', function (next) {
     next()
 })
 
-// Create geoCoder
+// Create geoCoder dropOffAddress &&
+// Create geoCoder pickUpAddress
 OrderSchema.pre('save', async function (next) {
-    const loc = await geocoder.geocode(this.address);
-    this.location = {
+    const pickUp = await geocoder.geocode(this.pickUpAddress);
+    const dropOff = await geocoder.geocode(this.dropOffAddress);
+
+    this.pickLocation = {
         type: 'Points',
-        coordinates: [loc[0].longitude, loc[0].latitude],
-        formattedAddress: loc[0].formattedAddress,
-        street: loc[0].streetName,
-        city: loc[0].city,
-        state: loc[0].stateCode,
-        zipCode: loc[0].zipCode,
-        country: loc[0].countryCode
+        coordinates: [pickUp[0].longitude, pickUp[0].latitude],
+        formattedAddress: pickUp[0].formattedAddress,
+        street: pickUp[0].streetName,
+        city: pickUp[0].city,
+        state: pickUp[0].stateCode,
+        zipCode: pickUp[0].zipCode,
+        country: pickUp[0].countryCode
     }
+
+    this.dropLocation = {
+        type: 'Points',
+        coordinates: [dropOff[0].longitude, dropOff[0].latitude],
+        formattedAddress: dropOff[0].formattedAddress,
+        street: dropOff[0].streetName,
+        city: dropOff[0].city,
+        state: dropOff[0].stateCode,
+        zipCode: dropOff[0].zipCode,
+        country: dropOff[0].countryCode
+    }
+
     // Do not add
-    this.address = undefined
+    this.pickUpAddress = undefined
+    this.dropOffAddress = undefined
     next()
 })
 

@@ -10,6 +10,7 @@ dotenv.config({path: './config/config.env'})
 
 // load application routes
 const order = require('./routes/order.route')
+const auth = require('./routes/auth.route')
 
 // load database
 const connectDB = require('./config/db')
@@ -28,6 +29,7 @@ app.use(express.json())
 
 // Mount router
 app.use('/api/v1/orders', order)
+app.use('/api/v1/auth', auth)
 app.use(errorHandler)
 
 const PORT = process.env.PORT || 5000
