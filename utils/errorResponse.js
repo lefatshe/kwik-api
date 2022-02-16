@@ -1,10 +1,8 @@
-const errorHandler = (err, req, res, next) => {
-    // console.log(err.message.stack.red)
-
-    res.status(err.statusCode || 500).json({
-        success: false,
-        error: err.message || 'Server Error'
-    })
+class ErrorResponse extends Error {
+    constructor(message, statusCode) {
+        super(message)
+        this.statusCode = statusCode
+    }
 }
 
-module.exports = errorHandler
+module.exports = ErrorResponse

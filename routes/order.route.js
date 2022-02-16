@@ -6,19 +6,20 @@ const {
     createOrder,
     updateOrder,
     deleteOrder
-} = require('../controllers/orders/orders.controllers')
+} = require('../controllers/orders/orders.controllers');
 
-const router = express.Router()
+const router = express.Router();
+const {protect} = require("../middleware/auth");
 
 router
     .route('/')
     .get(getOrders)
-    .post(createOrder)
+    .post(protect, createOrder)
 
 router
     .route('/:id')
     .get(getByIdOrder)
-    .put(updateOrder)
-    .delete(deleteOrder)
+    .put(protect,  updateOrder)
+    .delete(protect, deleteOrder)
 
 module.exports = router

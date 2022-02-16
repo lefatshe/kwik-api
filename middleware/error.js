@@ -5,11 +5,10 @@ const errorHandler = (err, req, res, next) => {
 
     error.message = err.message
 
-    // debug error
     console.log(err)
 
     // mongoose bad ObjectID
-    if (err.name === 'CastError') {
+    if (err.name === 'Error' || err.name === 'CastError') {
         const message = `Orders not found id of ${err.value}`;
         error = new ErrorResponse(message, 404)
     }
@@ -26,11 +25,10 @@ const errorHandler = (err, req, res, next) => {
         error = new ErrorResponse(message, 400)
     }
 
-
-    res.status(err.statusCode || 500).json({
+    res.status(error.statusCode || 500).json({
         success: false,
-        error: err || "Server error"
-    });
+        error: error.message || 'Server error'
+    })
 
 };
 

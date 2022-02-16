@@ -4,6 +4,8 @@ const dotenv = require('dotenv')
 // const logger = require('./middleware/logger')
 const morgan = require('morgan')
 const errorHandler = require('./middleware/error');
+// Coookie
+const cookieParser = require('cookie-parser')
 
 // load environment variables
 dotenv.config({path: './config/config.env'})
@@ -26,7 +28,8 @@ if (process.env.NODE_ENV === 'development') {
 
 // Body parser
 app.use(express.json())
-
+// Cookie parse
+app.use(cookieParser())
 // Mount router
 app.use('/api/v1/orders', order)
 app.use('/api/v1/auth', auth)

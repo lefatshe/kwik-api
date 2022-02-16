@@ -7,8 +7,10 @@ const asyncHandler = require('../../middleware/async')
 // @route:   GET /api/v1/orders
 // @access:   Public
 exports.getOrders = asyncHandler(async (req, res, next) => {
-    const order = await Order.find();
-    res.status(200)
+    const order = await Order.find()
+
+    res
+        .status(200)
         .json({success: true, count: order.length, data: order});
 })
 
@@ -17,15 +19,15 @@ exports.getOrders = asyncHandler(async (req, res, next) => {
 // @route:   GET /api/v1/orders/:id
 // @access:   Public
 exports.getByIdOrder = asyncHandler(async (req, res, next) => {
-    const order = await Order.findById(req.params.id);
 
+    const order = await Order.findById(req.params.id);
     if (!order) {
         return next(
-            new ErrorResponse(`Orders not found with id ${req.params.id}`, 404)
-        );
+            new ErrorResponse(`Order not found of id ${req.params.id}`, 404)
+        )
     }
 
-    res.status(200).json({success: true, data: order});
+    return res.status(200).json({success: true, data: order})
 })
 
 // ----------------------------------------------------------
@@ -34,6 +36,7 @@ exports.getByIdOrder = asyncHandler(async (req, res, next) => {
 // @access:   Private
 exports.createOrder = asyncHandler(async (req, res, next) => {
     const order = await Order.create(req.body)
+    
     res.status(201).json({
         success: true,
         data: order
