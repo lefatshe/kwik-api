@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "NODE_ENV=production node server",
+    "prod": "NODE_ENV=production node server",
     "dev": "nodemon server"
   },
   "repository": {
@@ -26,7 +26,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.13",
     "morgan": "^1.10.0",
-    "node-geocoder": "^3.28.0",
+    "node-geocoder": "^3.29.0",
     "slugify": "^1.6.3"
   },
   "devDependencies": {

@@ -10,7 +10,8 @@ const cookieParser = require('cookie-parser')
 // load environment variables
 dotenv.config({path: './config/config.env'})
 
-// load application routes
+// Route files
+const job = require('./routes/jobs.route')
 const order = require('./routes/order.route')
 const auth = require('./routes/auth.route')
 
@@ -31,6 +32,7 @@ app.use(express.json())
 // Cookie parse
 app.use(cookieParser())
 // Mount router
+app.use('/api/v1/jobs', job)
 app.use('/api/v1/orders', order)
 app.use('/api/v1/auth', auth)
 app.use(errorHandler)

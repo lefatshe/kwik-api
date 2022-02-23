@@ -1,0 +1,53 @@
+[
+  {
+    "_id": "5d713995b721c3bb38c1f5d0",
+    "name": "Sebokeng - 1983",
+    "email": "me@me.com",
+    "phone": "(011)111-1111",
+    "pickUpAddress": "Zone 11, 14659 Khaketla St, Sebokeng Unit 11, Sebokeng, 1983, South Africa",
+    "dropOffAddress": "Zone 7, 8261 Mangoaela St, Sebokeng Unit 7, Sebokeng, 1983, South Africa",
+    "priority": [
+      "kwik"
+    ],
+    "photo": "no-photo.jpg",
+    "housing": false,
+    "averageCost": 10000,
+    "jobAssistance": true,
+    "jobGuarantee": true,
+    "acceptGi": true
+  },
+  {
+    "_id": "5d713a66ec8f2b88b8f830b8",
+    "name": "Telford Ave - 8604",
+    "email": "me@me.com",
+    "phone": "(011)111-1111",
+    "pickUpAddress": "51 President St, Bramley, Gauteng, 2073, South Africa",
+    "dropOffAddress": "2190 Telford Ave, Ganyesa, North West, 8604, South Africa",
+    "priority": [
+      "kwik"
+    ],
+    "photo": "no-photo.jpg",
+    "housing": false,
+    "averageCost": 100000,
+    "jobAssistance": true,
+    "jobGuarantee": true,
+    "acceptGi": true
+  },
+  {
+    "_id": "5d725a037b292f5f8ceff787",
+    "name": "Grayston - 2031",
+    "email": "me@me.com",
+    "phone": "(011)111-1111",
+    "pickUpAddress": "10 Grayston Dr, Strathavon, Sandton, 2031, South Africa",
+    "dropOffAddress": "100 Grayston Dr, Strathavon, Sandton, 2031, South Africa",
+    "priority": [
+      "kwik"
+    ],
+    "photo": "no-photo.jpg",
+    "housing": false,
+    "averageCost": 800,
+    "jobAssistance": true,
+    "jobGuarantee": true,
+    "acceptGi": true
+  }
+]

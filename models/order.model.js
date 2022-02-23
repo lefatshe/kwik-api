@@ -39,8 +39,11 @@ const OrderSchema = new mongoose.Schema({
             'Please provide address'
         ]
     },
+
+    // pickLocation - set as Geo-location
     pickLocation: {
         // Geo Json default fields
+        // GeoJSON Point
         type: {
             type: String,
             enum: ['Point']
@@ -52,12 +55,14 @@ const OrderSchema = new mongoose.Schema({
         formattedAddress: String,
         street: String,
         city: String,
-        states: String,
+        state: String,
         zipcode: String,
         country: String
     },
+
+    // dropLocation - set as Geo-location
     dropLocation: {
-        // Geo Json default fields
+        // GeoJSON Point
         type: {
             type: String,
             enum: ['Point']
@@ -69,10 +74,11 @@ const OrderSchema = new mongoose.Schema({
         formattedAddress: String,
         street: String,
         city: String,
-        states: String,
+        state: String,
         zipcode: String,
         country: String
     },
+
     description: {
         type: String,
         required: [false],
@@ -112,6 +118,9 @@ const OrderSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
+}, {
+    toJSON: {virtuals: true},
+    toObject: {virtuals: true}
 })
 
 // Create slug from name
@@ -123,36 +132,58 @@ OrderSchema.pre('save', function (next) {
 // Create geoCoder dropOffAddress &&
 // Create geoCoder pickUpAddress
 OrderSchema.pre('save', async function (next) {
-    const pickUp = await geocoder.geocode(this.pickUpAddress);
-    const dropOff = await geocoder.geocode(this.dropOffAddress);
 
+    const defaultCountry = 'South Africa'
+    const pickUpAddress = await geocoder.geocode(this.pickUpAddress);
+    const dropOffAddress = await geocoder.geocode(this.dropOffAddress);
+
+    // pickUpAddress
+    this.pickUpAddress = pickUpAddress[0].formattedAddress;
     this.pickLocation = {
         type: 'Points',
-        coordinates: [pickUp[0].longitude, pickUp[0].latitude],
-        formattedAddress: pickUp[0].formattedAddress,
-        street: pickUp[0].streetName,
-        city: pickUp[0].city,
-        state: pickUp[0].stateCode,
-        zipCode: pickUp[0].zipCode,
-        country: pickUp[0].countryCode
-    }
+        coordinates: [pickUpAddress[0].longitude, pickUpAddress[0].latitude],
+        formattedAddress: pickUpAddress[0].formattedAddress,
+        street: pickUpAddress[0].streetName,
+        city: pickUpAddress[0].city,
+        state: pickUpAddress[0].stateCode,
+        zipcode: pickUpAddress[0].zipcode,
+        country: defaultCountry
+    };
 
+    // dropOffAddress
+    this.dropOffAddress = dropOffAddress[0].formattedAddress;
     this.dropLocation = {
         type: 'Points',
-        coordinates: [dropOff[0].longitude, dropOff[0].latitude],
-        formattedAddress: dropOff[0].formattedAddress,
-        street: dropOff[0].streetName,
-        city: dropOff[0].city,
-        state: dropOff[0].stateCode,
-        zipCode: dropOff[0].zipCode,
-        country: dropOff[0].countryCode
+        coordinates: [dropOffAddress[0].longitude, dropOffAddress[0].latitude],
+        formattedAddress: dropOffAddress[0].formattedAddress,
+        street: dropOffAddress[0].streetName,
+        city: dropOffAddress[0].city,
+        state: dropOffAddress[0].stateCode,
+        zipcode: dropOffAddress[0].zipcode,
+        country: defaultCountry
     }
 
-    // Do not add
-    this.pickUpAddress = undefined
-    this.dropOffAddress = undefined
     next()
 })
+
+// Cascade delete courses when a bootcamp is deleted
+OrderSchema.pre('remove', async function(next) {
+
+    console.log(`Jobs being removed from Order ${this._id}`);
+
+    await this.model('Job').deleteMany({ order: this._id });
+
+    next();
+});
+
+// ----------------------------------------------------------------
+// Reverse populate with virtuals
+OrderSchema.virtual('jobs', {
+    ref: 'Job',
+    localField: '_id',
+    foreignField: 'order',
+    justOne: false
+});
 
 
 // Create slug from name
