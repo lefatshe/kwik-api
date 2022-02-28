@@ -44,4 +44,51 @@ const JobSchema = new mongoose.Schema({
 });
 
 
+// Static method to get avg of Job tuition's
+JobSchema.statics.getAverageCost = async function(orderId) {
+
+    // console.log('Calculate avg cost...'.blue)
+
+    const obj = await this.aggregate([
+        {
+            $match: { order: orderId }
+        },
+        {
+            $group: {
+                _id: '$order',
+                averageCost: { $avg: '$tuition' }
+            }
+        }
+    ]);
+
+    try {
+        if (obj[0]) {
+            await this.model("Order").findByIdAndUpdate(orderId, {
+                averageCost:Math.ceil(obj[0].averageCost / 10) * 10,
+            });
+        } else {
+            await this.model("Order").findByIdAndUpdate(orderId, {
+                averageCost: undefined,
+            });
+        }
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+
+// Call getAverageCost after save
+JobSchema.post('save', async function() {
+    this.constructor.getAverageCost(this.order)
+    // await this.constructor.getAverageCost(this.bootcamp);
+});
+
+// Call getAverageCost after remove
+JobSchema.post('remove', async function () {
+    this.constructor.getAverageCost(this.order)
+    // await this.constructor.getAverageCost(this.bootcamp);
+});
+
+
+
 module.exports = mongoose.model('Job', JobSchema);

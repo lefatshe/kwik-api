@@ -11,7 +11,6 @@
     ],
     "photo": "no-photo.jpg",
     "housing": false,
-    "averageCost": 10000,
     "jobAssistance": true,
     "jobGuarantee": true,
     "acceptGi": true
@@ -28,7 +27,6 @@
     ],
     "photo": "no-photo.jpg",
     "housing": false,
-    "averageCost": 100000,
     "jobAssistance": true,
     "jobGuarantee": true,
     "acceptGi": true
@@ -45,7 +43,6 @@
     ],
     "photo": "no-photo.jpg",
     "housing": false,
-    "averageCost": 800,
     "jobAssistance": true,
     "jobGuarantee": true,
     "acceptGi": true

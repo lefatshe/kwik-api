@@ -8,38 +8,17 @@ const Order = require('../../models/order.model');
 // @route     GET /api/v1/orders/:orderId/orders
 // @access    Public
 exports.getJobs = asyncHandler(async (req, res, next) => {
-    let query
 
     if (req.params.orderId) {
-        query = Job.find({order: req.params.orderId})
+        const jobs = await Job.find({order: req.params.orderId})
+
+        return res.status(200).json({
+            success: true, count: jobs.length, data: jobs
+        })
     } else {
-        query = Job.find()
-            // .populate('order')
-            .populate({
-                path: 'order',
-                select: 'name pickUpAddress dropOffAddress'
-            })
+        res.status(200).json(res.advancedResults);
     }
 
-    const jobs = await query
-
-    return res.status(200).json({
-        success: true,
-        count: jobs.length,
-        data: jobs
-    });
-
-    // if (req.params.orderId) {
-    //     const courses = await Job.find({ order: req.params.orderId });
-    //
-    //     return res.status(200).json({
-    //         success: true,
-    //         count: courses.length,
-    //         data: courses
-    //     });
-    // } else {
-    //     res.status(200).json(res.advancedResults);
-    // }
 });
 
 
@@ -48,22 +27,17 @@ exports.getJobs = asyncHandler(async (req, res, next) => {
 // @access    Public
 exports.getJob = asyncHandler(async (req, res, next) => {
     const job = await Job.findById(req.params.id).populate({
-        path: 'order',
-        select: 'name pickUpAddress dropOffAddress'
+        path: 'order', select: 'name pickUpAddress dropOffAddress'
     });
 
     if (!job) {
-        return next(
-            new ErrorResponse(`No job with the id of ${req.params.id}`, 404)
-        );
+        return next(new ErrorResponse(`No job with the id of ${req.params.id}`, 404));
     }
 
     res.status(200).json({
-        success: true,
-        data: job
+        success: true, data: job
     });
 });
-
 
 
 // @desc      Add job
@@ -76,12 +50,7 @@ exports.addJob = asyncHandler(async (req, res, next) => {
     const order = await Order.findById(req.params.orderId);
 
     if (!order) {
-        return next(
-            new ErrorResponse(
-                `No Order with the id of ${req.params.orderId}`,
-                404
-            )
-        );
+        return next(new ErrorResponse(`No Order with the id of ${req.params.orderId}`, 404));
     }
 
     // Make sure user is bootcamp owner
@@ -97,11 +66,9 @@ exports.addJob = asyncHandler(async (req, res, next) => {
     const job = await Job.create(req.body);
 
     res.status(200).json({
-        success: true,
-        data: job
+        success: true, data: job
     });
 });
-
 
 
 // @desc      Update job
@@ -111,22 +78,17 @@ exports.updateJob = asyncHandler(async (req, res, next) => {
     let job = await Job.findById(req.params.id);
 
     if (!job) {
-        return next(
-            new ErrorResponse(`No course with the id of ${req.params.id}`, 404)
-        );
+        return next(new ErrorResponse(`No course with the id of ${req.params.id}`, 404));
     }
 
     job = await Job.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-        runValidators: true
+        new: true, runValidators: true
     })
 
     res.status(200).json({
-        success: true,
-        data: job
+        success: true, data: job
     });
 });
-
 
 
 // @desc      Delete job
@@ -136,15 +98,12 @@ exports.deleteJob = asyncHandler(async (req, res, next) => {
     const job = await Job.findById(req.params.id);
 
     if (!job) {
-        return next(
-            new ErrorResponse(`No job with the id of ${req.params.id}`, 404)
-        );
+        return next(new ErrorResponse(`No job with the id of ${req.params.id}`, 404));
     }
 
     await job.remove()
 
     res.status(200).json({
-        success: true,
-        data: {}
+        success: true, data: {}
     });
 });

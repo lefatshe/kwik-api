@@ -6,6 +6,9 @@ const morgan = require('morgan')
 const errorHandler = require('./middleware/error');
 // Coookie
 const cookieParser = require('cookie-parser')
+// file upload
+const fileupload = require('express-fileupload')
+const path = require('path');
 
 // load environment variables
 dotenv.config({path: './config/config.env'})
@@ -31,6 +34,11 @@ if (process.env.NODE_ENV === 'development') {
 app.use(express.json())
 // Cookie parse
 app.use(cookieParser())
+// fileupload
+app.use(fileupload())
+// Set static folder
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Mount router
 app.use('/api/v1/jobs', job)
 app.use('/api/v1/orders', order)

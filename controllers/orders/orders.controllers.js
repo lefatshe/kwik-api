@@ -2,26 +2,20 @@ const Order = require('../../models/order.model');
 const ErrorResponse = require('../../utils/errorResponse');
 const asyncHandler = require('../../middleware/async')
 const geocoder = require('../../utils/geocoder');
+const path = require('path');
+const fs = require('fs');
 
 // ----------------------------------------------------------
 // @desc:   getOrders
 // @route:   GET /api/v1/orders
 // @access:   Public
 exports.getOrders = asyncHandler(async (req, res, next) => {
-    let query;
 
-    let queryStr = JSON.stringify(req.query)
-
-    queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
-
-    query = Order.find(JSON.parse(queryStr))
-        .populate('jobs')
-
-    const order = await query
-
+    // Create advanced search on all : GET /orders
     res
         .status(200)
-        .json({success: true, count: order.length, data: order});
+        .json(res.advancedResults);
+
 })
 
 // ----------------------------------------------------------
@@ -118,6 +112,68 @@ exports.getOrdersInRadius = asyncHandler(async (req, res, next) => {
         success: true,
         count: orders.length,
         data: orders
+    });
+});
+
+
+// @desc      Upload photo for order
+// @route     PUT /api/v1/orders/:id/photo
+// @access    Private
+exports.orderPhotoUpload = asyncHandler(async (req, res, next) => {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+        return next(
+            new ErrorResponse(`Order not found with id of ${req.params.id}`, 404)
+        );
+    }
+
+    // Make sure user is order owner
+    // if (order.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    //     return next(
+    //         new ErrorResponse(
+    //             `User ${req.user.id} is not authorized to update this bootcamp`,
+    //             401
+    //         )
+    //     );
+    // }
+
+    if (!req.files) {
+        return next(new ErrorResponse(`Please upload a file`, 400));
+    }
+
+    const file = req.files.file;
+
+    // Make sure the image is a photo
+    if (!file.mimetype.startsWith('image')) {
+        return next(new ErrorResponse(`Please upload an image file`, 400));
+    }
+
+    // Check filesize
+    if (file.size > process.env.MAX_FILE_UPLOAD) {
+        return next(
+            new ErrorResponse(
+                `Please upload an image less than ${process.env.MAX_FILE_UPLOAD}`,
+                400
+            )
+        );
+    }
+
+    // Create custom filename
+    file.name = `photo_${order._id}${path.parse(file.name).ext}`;
+    // Upload file path
+    file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async err => {
+        if (err) {
+            console.error(err);
+            return next(new ErrorResponse(`Problem with file upload`, 500));
+        }
+
+        await Order.findByIdAndUpdate(req.params.id, {photo: file.name});
+
+        res.status(200).json({
+            success: true,
+            data: file.name
+        });
     });
 });
 

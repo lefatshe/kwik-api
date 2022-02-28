@@ -1,12 +1,7 @@
 const express = require('express')
 
 const {
-    getOrders,
-    getByIdOrder,
-    createOrder,
-    updateOrder,
-    deleteOrder,
-    getOrdersInRadius
+    getOrders, getByIdOrder, createOrder, updateOrder, deleteOrder, getOrdersInRadius, orderPhotoUpload
 } = require('../controllers/orders/orders.controllers');
 
 // Include resource routers
@@ -15,6 +10,12 @@ const jobsRouter = require('./jobs.route')
 const router = express.Router();
 
 const {protect} = require("../middleware/auth");
+
+// -------------------------------------------------------------------------------------
+// Add advanced search
+const Order = require('../models/order.model');
+const advancedResults = require('../middleware/advancedResults');
+// -------------------------------------------------------------------------------------
 
 // Re-route into other resource routers
 router
@@ -25,8 +26,13 @@ router
     .get(getOrdersInRadius);
 
 router
+    .route('/:id/photo')
+    .put(orderPhotoUpload);
+
+
+router
     .route('/')
-    .get(getOrders)
+    .get(advancedResults(Order, 'orders'), getOrders)
     .post(createOrder)
 
 router

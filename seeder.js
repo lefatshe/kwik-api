@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const mongoose = require('mongoose');
 const colors = require('colors');
 const dotenv = require('dotenv');
@@ -26,7 +27,9 @@ const jobs = JSON.parse(
 const importData = async () => {
   try {
     await Order.create(orders);
+
     await Job.create(jobs);
+
     console.log('Data Imported...'.green.inverse);
     process.exit();
   } catch (err) {
@@ -36,12 +39,24 @@ const importData = async () => {
 
 // Delete data
 const deleteData = async () => {
+
+  console.log('Photo Destroyed...'.red.inverse);
+  const fileUploadDirectory = `${process.env.FILE_UPLOAD_PATH}/`;
+  fs.readdir(fileUploadDirectory, (err, files) => {
+    if (err) throw err;
+    for (const file of files) {
+      fs.unlink(path.join(fileUploadDirectory, file), err => {
+        if (err) throw err;
+      });
+    }
+  });
+
   try {
     await Order.deleteMany();
-    await Job
+    await Job.deleteMany();
 
-        .deleteMany();
     console.log('Data Destroyed...'.red.inverse);
+
     process.exit();
   } catch (err) {
     console.error(err);

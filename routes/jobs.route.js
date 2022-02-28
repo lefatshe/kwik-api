@@ -1,17 +1,21 @@
 const express = require('express');
 const {
-    getJobs,
-    getJob,
-    addJob,
-    updateJob,
-    deleteJob
+    getJobs, getJob, addJob, updateJob, deleteJob
 } = require('../controllers/jobs/jobs.controllers');
 
 const router = express.Router({mergeParams: true});
 
+// -------------------------------------------------------------------------------------
+// Add advanced search
+const Job = require('../models/job.model');
+const advancedResults = require('../middleware/advancedResults');
+// -------------------------------------------------------------------------------------
+
 router
     .route('/')
-    .get(getJobs)
+    .get(advancedResults(Job, {
+        path: 'order', select: 'name pickUpAddress dropOffAddress'
+    }), getJobs)
     .post(addJob)
 
 router
